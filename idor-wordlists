@@ -1,0 +1,264 @@
+# 🧩 **IDOR URL Paths Wordlist**
+```
+/account/
+/account/{id}
+/account/settings
+/admin/
+/admin/{id}
+/api/user/{user_id}
+/api/account/{account_id}
+/api/order/{order_id}
+/api/payment/{payment_id}
+/application/{id}
+/cart/{cart_id}
+/checkout/{checkout_id}
+/dashboard/
+/document/{doc_id}
+/download/{file_id}
+/edit/{id}
+/event/{event_id}
+/file/{file_id}
+/image/{image_id}
+/invoice/{invoice_id}
+/messages/{message_id}
+/notification/{notification_id}
+/order/{order_id}
+/payment/{payment_id}
+/profile/
+/profile/{user_id}
+/settings/
+/support/ticket/{ticket_id}
+/transaction/{transaction_id}
+/upload/{file_id}
+/user/{user_id}
+/users/{user_id}/profile
+/view/{resource_id}
+/workspace/{workspace_id}
+```
+
+---
+
+# 🧩 **Common IDOR Parameter Names Wordlist**
+```
+id
+user_id
+account_id
+profile_id
+doc_id
+file_id
+order_id
+image_id
+message_id
+notification_id
+transaction_id
+ticket_id
+payment_id
+invoice_id
+session_id
+product_id
+record_id
+group_id
+team_id
+workspace_id
+application_id
+customer_id
+cart_id
+checkout_id
+folder_id
+item_id
+admin_id
+request_id
+submission_id
+comment_id
+thread_id
+ref_id
+```
+
+---
+
+# 🧩 **Typical Numeric ID Patterns**
+✅ Try fuzzing numbers!
+
+```
+1
+2
+3
+4
+5
+10
+100
+101
+999
+1000
+1234
+4321
+1111
+2222
+3333
+4444
+5555
+6666
+7777
+8888
+9999
+12345
+54321
+10000
+20000
+```
+
+*(IDOR often happens because developers assign **auto-increment IDs** — just guessing next or previous number works.)*
+
+---
+
+# 🧩 **File/Object Extensions Wordlist (IDOR for Files)**
+```
+.pdf
+.doc
+.docx
+.xls
+.xlsx
+.txt
+.csv
+.json
+.xml
+.png
+.jpg
+.jpeg
+.gif
+.svg
+.zip
+.rar
+.tar
+.tar.gz
+.mp4
+.mp3
+.avi
+.mov
+.ppt
+.pptx
+```
+
+---
+
+# 🧩 **Common API Endpoints for IDOR Testing**
+```
+/api/v1/users/{user_id}
+/api/v1/files/{file_id}
+/api/v1/documents/{doc_id}
+/api/v1/messages/{message_id}
+/api/v1/payments/{payment_id}
+/api/v1/orders/{order_id}
+/api/v1/tickets/{ticket_id}
+/api/v1/uploads/{upload_id}
+/api/v2/accounts/{account_id}
+/api/v2/transactions/{transaction_id}
+/api/v2/notifications/{notification_id}
+/api/profile/{user_id}
+/api/settings/{user_id}
+/api/cart/{cart_id}
+/api/groups/{group_id}
+/api/teams/{team_id}
+/api/items/{item_id}
+/api/admin/{admin_id}
+/api/folder/{folder_id}
+```
+
+---
+
+# 🧩 **Other Smart IDOR Targets Wordlist**
+✅ Targets developers often protect badly:
+```
+backup
+logs
+drafts
+history
+previous
+archive
+version
+resource
+media
+assets
+avatars
+tokens
+keys
+credentials
+secrets
+uploads
+downloads
+export
+import
+templates
+settings
+preferences
+audit
+billing
+subscriptions
+plans
+roles
+permissions
+sessions
+devices
+```
+
+---
+
+# 🧩 **IDOR Fuzzing Combinations (for URL or Parameter Brute-forcing)**
+```
+/user/1
+/user/2
+/user/3
+/user/4
+/account/1
+/account/2
+/file/100
+/file/101
+/file/102
+/order/500
+/order/501
+/order/502
+/download/1000
+/download/1001
+/profile?id=1
+/profile?id=2
+/profile?id=3
+/messages?id=10
+/messages?id=11
+/messages?id=12
+/document?id=5
+/document?id=6
+/document?id=7
+```
+
+---
+
+# 🧩 **Bonus: IDOR Indicators in Web Responses**
+✅ What to **look for in responses** when IDOR is successful:
+
+- `"user_id": "xxx"`
+- `"account_number": "xxx"`
+- `"email": "xxx@domain.com"`
+- `"phone": "xxx"`
+- `"address": "xxx"`
+- `"order_total": "xxx"`
+- Presence of other users' PII (Personally Identifiable Information)
+- Other users’ uploaded files appearing
+- Files / documents not belonging to your account
+- Any data leakage based on guessed ID
+
+---
+
+# 🧠 **Pro Tip for IDOR Hunting**
+- 🛠 Tools like **ffuf**, **Burp Intruder**, **dirsearch** are perfect to automate IDOR fuzzing.
+- 🧪 Always try both **authenticated** and **unauthenticated** requests.
+- 🚩 If you find an IDOR, immediately check if you can **read**, **edit**, **delete**, or **control** the object!
+
+---
+
+# ⚡ Quick Example: Automated IDOR Fuzzing via Burp Intruder
+- Set `Intruder` ➔ Attack type ➔ Sniper or Cluster Bomb
+- Payloads ➔ Upload the **numeric ID list** (like 1–10000)
+- Set positions ➔ Where `id`, `user_id`, `account_id` appears
+- Monitor responses ➔ Look for size difference, status codes, new data leaks
+
+---
